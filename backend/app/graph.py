@@ -1,10 +1,12 @@
 class Vertex:
     """ A Vertex in a graph. """
     
-    def __init__(self, element, cost):
+    def __init__(self, element, cost=0, lat=None, lon=None):
         """ Create a vertex, with data element. """
         self._element = element
         self._cost = cost
+        self._lat = lat
+        self._lon = lon
         
 
     def __str__(self):
@@ -14,6 +16,14 @@ class Vertex:
     def element(self):
         """ Return the data for the vertex. """
         return self._element
+
+    def latitude(self):
+        """ Return the latitude of the vertex. """
+        return self._lat
+
+    def longitude(self):
+        """ Return the longitude of the vertex. """
+        return self._lon
     
     def cost(self):
         """Return the cost of the vertex"""
@@ -192,7 +202,7 @@ class Graph:
     #--------------------------------------------------#
     #ADT methods to modify the graph
     
-    def add_vertex(self, element, cost=0):
+    def add_vertex(self, element, cost=0, lat=None, lon=None):
         """ Add and return a new vertex with data element.
 
         Note -- if there is already a vertex with the same data element,
@@ -200,7 +210,7 @@ class Graph:
         If the client using this ADT implementation does not want  
         duplicate elements, it is their responsibility not to add them.
         """
-        v = Vertex(element, cost)
+        v = Vertex(element, cost, lat, lon)
         self._structure[v] = dict()  # create an empty dict, ready for edges
         return v
 
