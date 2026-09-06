@@ -1,5 +1,26 @@
+import math
 from .apq import APQBinaryHeap
-from math import sqrt
+
+def heuristic(vertex, destination):
+    """Estimate the distance between two vertices in metres."""
+    lat1 = math.radians(vertex.latitude())
+    lon1 = math.radians(vertex.longitude())
+    lat2 = math.radians(destination.latitude())
+    lon2 = math.radians(destination.longitude())
+
+    earth_radius = 6371000  # metres
+
+    dlat = lat2 - lat1
+    dlon = lon2 - lon1
+
+    a = (
+        math.sin(dlat / 2) ** 2
+        + math.cos(lat1)
+        * math.cos(lat2)
+        * math.sin(dlon / 2) ** 2
+    )
+
+    return 2 * earth_radius * math.asin(math.sqrt(a))
 
 def dijkstra_dest_apq(graph, s, f):
         open = APQBinaryHeap()
@@ -33,8 +54,6 @@ def a_star_dest_apq(graph, s, f):
         preds = {s: None}
 
         open.add((0,0),s)#storing this time as (total cost, incurred cost)
-        fx = f.latitude()
-        fy = f.longitude()
         while open._size > 0:
             (v_total_cost, v_incurred_cost),v = open.remove_min()
             predecessor = preds.pop(v)
@@ -43,7 +62,7 @@ def a_star_dest_apq(graph, s, f):
                 break
             for e in graph.get_edges(v):
                 w = e.opposite(v)
-                estimated_cost = sqrt( ((w.latitude() - fx)**2) + ((w.longitude() - fy)**2) ) #distnace formula from current node to end node
+                estimated_cost = estimated_cost = heuristic(w, f)
                 if not w in closed:
                     new_incurred_cost = v_incurred_cost + e.element() + w.cost()#element label of the edge = cost of traversing
                     if not w in preds:
