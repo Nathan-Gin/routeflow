@@ -1,3 +1,5 @@
+import json
+
 class Vertex:
     """ A Vertex in a graph. """
     
@@ -285,6 +287,39 @@ class Graph:
                     if grid[r][c+1] != 'X':
                         other = self.get_vertex_by_label((r,(c+1)))
                         self.add_edge(vertex,other,1)
+
+    def create_from_json(self, filename):
+        """Build the graph from a JSON map file.
+
+        Each node becomes a Vertex containing its ID and geographic
+        coordinates. Each edge becomes an Edge whose label represents
+        the distance between two locations.
+        """
+
+        with open(filename, "r") as file:
+            data = json.load(file)
+
+        vertices = {}
+
+        # Create a Vertex for each location and store it by its ID
+        # so edges can find the correct Vertex later.
+        for node in data["nodes"]:
+            vertex = self.add_vertex(
+                node["id"],
+                lat=node["lat"],
+                lon=node["lon"]
+            )
+            vertices[node["id"]] = vertex
+
+        for edge in data["edges"]:
+            start = vertices[edge["from"]]
+            end = vertices[edge["to"]]
+
+            self.add_edge(
+                start,
+                end,
+                edge["distance"]
+            ) 
 
 
     #--------------------------------------------------#
