@@ -1,3 +1,4 @@
+import json
 from flask import Blueprint, request
 from .graph import Graph
 from .algorithms import dijkstra_dest_apq, a_star_dest_apq
@@ -12,6 +13,7 @@ python module it belongs to
 routes = Blueprint("routes", __name__)
 graph = Graph()
 graph.create_from_json("app/data/map.json")
+
 
 @routes.get("/api/health")
 def health():
@@ -46,3 +48,11 @@ def calculate_route():
         "distance": distance,
         "nodes_explored": len(result)
     }
+
+
+@routes.get("/api/map")
+def get_map():
+    with open("app/data/map.json") as file:
+        data = json.load(file)
+
+    return data

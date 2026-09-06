@@ -1,21 +1,112 @@
-
-
 {
   "nodes": [
-    {"id": "A", "lat": 51.8985, "lon": -8.4756},
-    {"id": "B", "lat": 51.8995, "lon": -8.4770},
-    {"id": "C", "lat": 51.9010, "lon": -8.4780},
-    {"id": "D", "lat": 51.9000, "lon": -8.4735},
-    {"id": "E", "lat": 51.9020, "lon": -8.4740},
-    {"id": "F", "lat": 51.9030, "lon": -8.4760}
+    {
+      "id": "UCC",
+      "lat": 51.89304,
+      "lon": -8.49197
+    },
+    {
+      "id": "Western Road",
+      "lat": 51.89355,
+      "lon": -8.50024
+    },
+    {
+      "id": "Fitzgerald's Park",
+      "lat": 51.89591,
+      "lon": -8.49586
+    },
+    {
+      "id": "Washington Street",
+      "lat": 51.89680,
+      "lon": -8.48150
+    },
+    {
+      "id": "Cork City Centre",
+      "lat": 51.89850,
+      "lon": -8.47560
+    },
+    {
+      "id": "St Patrick's Street",
+      "lat": 51.89860,
+      "lon": -8.47500
+    },
+    {
+      "id": "North Main Street",
+      "lat": 51.90020,
+      "lon": -8.47800
+    },
+    {
+      "id": "Shandon",
+      "lat": 51.90291,
+      "lon": -8.47312
+    },
+    {
+      "id": "Cathedral Road",
+      "lat": 51.90180,
+      "lon": -8.47000
+    },
+    {
+      "id": "Kent Station",
+      "lat": 51.90163,
+      "lon": -8.45822
+    }
   ],
+
   "edges": [
-    {"from": "A", "to": "B", "distance": 150},
-    {"from": "B", "to": "C", "distance": 180},
-    {"from": "A", "to": "D", "distance": 220},
-    {"from": "D", "to": "E", "distance": 200},
-    {"from": "E", "to": "F", "distance": 180},
-    {"from": "C", "to": "F", "distance": 250},
-    {"from": "B", "to": "D", "distance": 160}
+    {
+      "from": "UCC",
+      "to": "Western Road",
+      "distance": 700
+    },
+    {
+      "from": "UCC",
+      "to": "Fitzgerald's Park",
+      "distance": 500
+    },
+    {
+      "from": "Western Road",
+      "to": "Fitzgerald's Park",
+      "distance": 400
+    },
+    {
+      "from": "Fitzgerald's Park",
+      "to": "Washington Street",
+      "distance": 1000
+    },
+    {
+      "from": "Washington Street",
+      "to": "Cork City Centre",
+      "distance": 700
+    },
+    {
+      "from": "Cork City Centre",
+      "to": "St Patrick's Street",
+      "distance": 150
+    },
+    {
+      "from": "Cork City Centre",
+      "to": "North Main Street",
+      "distance": 400
+    },
+    {
+      "from": "North Main Street",
+      "to": "Shandon",
+      "distance": 600
+    },
+    {
+      "from": "Shandon",
+      "to": "Cathedral Road",
+      "distance": 400
+    },
+    {
+      "from": "Cathedral Road",
+      "to": "Kent Station",
+      "distance": 900
+    },
+    {
+      "from": "St Patrick's Street",
+      "to": "Kent Station",
+      "distance": 1000
+    }
   ]
 }
