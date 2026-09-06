@@ -1,4 +1,5 @@
 from .apq import APQBinaryHeap
+from math import sqrt
 
 def dijkstra_dest_apq(graph, s, f):
         open = APQBinaryHeap()
@@ -32,7 +33,8 @@ def a_star_dest_apq(graph, s, f):
         preds = {s: None}
 
         open.add((0,0),s)#storing this time as (total cost, incurred cost)
-        fx, fy = f.element()
+        fx = f.latitude()
+        fy = f.longitude()
         while open._size > 0:
             (v_total_cost, v_incurred_cost),v = open.remove_min()
             predecessor = preds.pop(v)
@@ -41,8 +43,7 @@ def a_star_dest_apq(graph, s, f):
                 break
             for e in graph.get_edges(v):
                 w = e.opposite(v)
-                wx, wy = w.element()
-                estimated_cost = abs(wx - fx) + abs(wy - fy) #manhatten formula to estimate how far in a 2d space we are from 2 points
+                estimated_cost = sqrt( ((w.latitude() - fx)**2) + ((w.longitude() - fy)**2) ) #distnace formula from current node to end node
                 if not w in closed:
                     new_incurred_cost = v_incurred_cost + e.element() + w.cost()#element label of the edge = cost of traversing
                     if not w in preds:

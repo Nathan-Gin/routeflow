@@ -5,10 +5,10 @@ from app.algorithms import dijkstra_dest_apq, a_star_dest_apq
 def create_test_graph():
     graph = Graph()
 
-    a = graph.add_vertex((0, 0))
-    b = graph.add_vertex((1, 0))
-    c = graph.add_vertex((2, 0))
-    d = graph.add_vertex((1, 1))
+    a = graph.add_vertex("A", lat=51.8985, lon=-8.4756)
+    b = graph.add_vertex("B", lat=51.8995, lon=-8.4770)
+    c = graph.add_vertex("C", lat=51.9010, lon=-8.4780)
+    d = graph.add_vertex("D", lat=51.9000, lon=-8.4735)
 
     graph.add_edge(a, b, 2)
     graph.add_edge(b, c, 3)
