@@ -1,0 +1,21 @@
+
+
+{
+  "nodes": [
+    {"id": "A", "lat": 51.8985, "lon": -8.4756},
+    {"id": "B", "lat": 51.8995, "lon": -8.4770},
+    {"id": "C", "lat": 51.9010, "lon": -8.4780},
+    {"id": "D", "lat": 51.9000, "lon": -8.4735},
+    {"id": "E", "lat": 51.9020, "lon": -8.4740},
+    {"id": "F", "lat": 51.9030, "lon": -8.4760}
+  ],
+  "edges": [
+    {"from": "A", "to": "B", "distance": 150},
+    {"from": "B", "to": "C", "distance": 180},
+    {"from": "A", "to": "D", "distance": 220},
+    {"from": "D", "to": "E", "distance": 200},
+    {"from": "E", "to": "F", "distance": 180},
+    {"from": "C", "to": "F", "distance": 250},
+    {"from": "B", "to": "D", "distance": 160}
+  ]
+}

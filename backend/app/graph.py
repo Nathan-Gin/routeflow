@@ -321,6 +321,19 @@ class Graph:
                 edge["distance"]
             ) 
 
+    def extract_path(self, pd, f):
+        end_vertex = self.get_vertex_by_label(f)
+        if end_vertex in pd:
+            path = []
+            current_v = end_vertex
+            while current_v is not None:
+                path.append(current_v.element()) #this will give it in reverse 
+                cost, predecessor = pd[current_v]
+                current_v = predecessor
+            total_path_cost = pd[end_vertex][0]
+            return path[::-1], total_path_cost #takes up lots of space so inefficient for larger but only copies over once to make the speed O(n)
+        return [], 0
+
 
     #--------------------------------------------------#
     #Additional methods to explore the graph
