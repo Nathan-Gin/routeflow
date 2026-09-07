@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RouteFlow</title>
+
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+</head>
+
+<body>
+
+    <header>
+        <h1>RouteFlow</h1>
+        <p>Interactive route planner</p>
+    </header>
+
+    <main>
+
+        <section class="controls">
+
+            <h2>Plan a Route</h2>
+
+            <div class="mode-buttons">
+                <button id="single-mode" class="mode-button active">
+                    Single Route
+                </button>
+
+                <button id="compare-mode" class="mode-button">
+                    Compare Algorithms
+                </button>
+            </div>
+            
+
+            <label for="start">Start</label>
+            <select id="start"></select>
+
+            <label for="destination">Destination</label>
+            <select id="destination"></select>
+
+            <label id="algorithm-label" for="algorithm">Algorithm</label>
+            <select id="algorithm">
+                <option value="astar">A*</option>
+                <option value="dijkstra">Dijkstra</option>
+            </select>
+
+            <button id="calculate-button">Calculate Route</button>
+
+        </section>
+
+
+        <section class="map">
+            <h2>Map</h2>
+
+            <div id="map-area"></div>
+        </section>
+
+
+        <section class="results">
+            <div id="single-route">
+                <h2>Route Results</h2>
+
+                <p>
+                    Distance:
+                    <span id="distance">-</span>
+                </p>
+
+                <p>
+                    Nodes explored:
+                    <span id="nodes-explored">-</span>
+                </p>
+
+                <p>
+                    Path:
+                    <span id="path">-</span>
+                </p>
+            </div>
+
+            <div id="comparison-results">
+                <h2>Algorithm Comparison</h2>
+
+                <div class="map-legend">
+                    <p>🔵 Dijkstra</p>
+                    <p>🔴 A*</p>
+                </div>
+
+                <div>
+                    <h3>Dijkstra</h3>
+                    <p>
+                        Distance:
+                        <span id="dijkstra-distance">-</span>
+                    </p>
+                    <p>
+                        Nodes explored:
+                        <span id="dijkstra-nodes">-</span>
+                    </p>
+                </div>
+
+                <div>
+                    <h3>A*</h3>
+                    <p>
+                        Distance:
+                        <span id="astar-distance">-</span>
+                    </p>
+                    <p>
+                        Nodes explored:
+                        <span id="astar-nodes">-</span>
+                    </p>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="script.js"></script>
+
+</body>
+</html>
