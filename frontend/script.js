@@ -181,12 +181,12 @@ async function  compareAlgorithms(params) {
 
     dijkstraLine = L.polyline(dijkstraCoordinates, {
         weight: 6,
-        color: "#0a03c9",
+        color: "#4b6bff",
     }).addTo(map);
 
     astarLine = L.polyline(astarCoordinates, {
         weight: 3,
-        color: "#fa0505"
+        color: "#ff5c5c"
     }).addTo(map);
 
     document.getElementById("dijkstra-distance").textContent =

@@ -21,8 +21,8 @@ def test_calculate_route():
     response = client.post(
         "/api/routes/calculate",
         json={
-            "start": "A",
-            "destination": "F",
+            "start": "UCC",
+            "destination": "Kent Station",
             "algorithm": "dijkstra"
         }
     )
@@ -35,5 +35,5 @@ def test_calculate_route():
     assert "distance" in data
     assert "nodes_explored" in data
 
-    assert data["path"][0] == "A"
-    assert data["path"][-1] == "F"
+    assert data["path"][0] == "UCC"
+    assert data["path"][-1] == "Kent Station"
