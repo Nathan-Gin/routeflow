@@ -8,7 +8,7 @@ L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
     attribution: "&copy; OpenStreetMap contributors"
 }).addTo(map);
 
-let map_data = null
+let map_data = null;
 let comparisonMode = false;
 
 async function loadMapData() {
@@ -111,6 +111,10 @@ compareModeButton.addEventListener("click", () => {
 
 // Sets single Mode as default
 singleModeButton.click(); 
+
+// Adding stops
+const addStopButton = document.getElementById("add-stop");
+addStopButton.addEventListener("click", addStop);
 
 async function handleCalculation() {
     
@@ -235,3 +239,36 @@ function pathToCoordinates(path){
         return [node.lat, node.lon]
     });
 }
+
+
+async function addStop() {
+
+    const stopContainer = document.createElement("div");
+    stopContainer.classList.add("stop");
+
+    const select = document.createElement("select")
+
+    // Populate new select option with nodes
+    for (const node of map_data.nodes) {
+
+        // Add location to dropdowns (within the )
+        const option = document.createElement("option");
+        option.value = node.id;
+        option.textContent = node.id;
+
+        select.appendChild(option);
+    } 
+
+    const removeButton = document.createElement("button");
+    removeButton.textContent = "Remove";
+
+    removeButton.addEventListener("click", () => {
+        stopContainer.remove();
+    });
+
+    stopContainer.appendChild(select);
+    stopContainer.appendChild(removeButton);
+
+    document.getElementById("stops-container").appendChild(stopContainer);
+}
+
