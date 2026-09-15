@@ -67,9 +67,9 @@ async function loadMapData() {
 }
 
 loadMapData();
-let routeLine = null;
-let dijkstraLine = null;
-let astarLine = null;
+let routeLine = [];
+let dijkstraLine = [];
+let astarLine = [];
 
 //Calculate Route
 
@@ -126,88 +126,125 @@ async function handleCalculation() {
 }
 
 async function calculateRoute() {
-    const start = document.getElementById("start").value;
-    const destination = document.getElementById("destination").value;
+    const stops = getStops()
     const algorithm = document.getElementById("algorithm").value;
 
-    const data = await requestRoute(start, destination, algorithm);
+    const data = await requestRoute(stops, algorithm);
 
-    //Remove previous route if there is one
-    if (routeLine){
-        map.removeLayer(routeLine);
-    }
-    if (dijkstraLine) {
-    map.removeLayer(dijkstraLine);
-    }
-    if (astarLine) {
-        map.removeLayer(astarLine);
-    }
+    removeLines();
     
-    const routeCoordinates = pathToCoordinates(data.path)
+    let totalDistance = 0;
+    let totalNodes =0;
+    let fullPath = [];
 
-    // Draw the calculated route.
-    routeLine = L.polyline(routeCoordinates, {
+    for (let i = 0; i < data.length; i++){
+        const routeCoordinates = pathToCoordinates(data[i].path);
+
+        totalDistance += data[i].distance;
+        totalNodes += data[i].nodes_explored; 
+
+        if (i === 0) {
+            fullPath.push(...data[i].path);
+        } else {
+            fullPath.push(...data[i].path.slice(1));
+        }
+
+        // Draw the calculated route.
+        const currentLine = L.polyline(routeCoordinates, {
         weight: 5,
         color: "#ff8a3d"
-    }).addTo(map);
+        }).addTo(map);
+
+        routeLine.push(currentLine);
+    }
 
     document.getElementById("distance").textContent =
-        `${data.distance} m`;
+        `${totalDistance} m`;
 
     document.getElementById("nodes-explored").textContent =
-        data.nodes_explored;
+        totalNodes;
 
     //this combines array elements returned by flask with " → "
     document.getElementById("path").textContent =
-        data.path.join(" → ");
+        fullPath.join(" → ");
 }
 
-async function  compareAlgorithms(params) {
-    const start = document.getElementById("start").value;
-    const destination = document.getElementById("destination").value;
+async function  compareAlgorithms() {
+    const stops = getStops()
 
-    const dijkstraData = await requestRoute(start, destination, "dijkstra");
-    const astarData = await requestRoute(start, destination, "astar");
+    const dijkstraData = await requestRoute(stops, "dijkstra");
+    const astarData = await requestRoute(stops, "astar");
 
-    //Remove previous route if there is one
-    if (routeLine){
-        map.removeLayer(routeLine);
-    }
-    if (dijkstraLine) {
-    map.removeLayer(dijkstraLine);
-    }
-    if (astarLine) {
-        map.removeLayer(astarLine);
-    }
+    removeLines();
 
-    const dijkstraCoordinates = pathToCoordinates(dijkstraData.path)
-    const astarCoordinates = pathToCoordinates(astarData.path)
+    let totalDistanceD = 0;
+    let totalNodesD =0;
+    let totalDistanceA = 0;
+    let totalNodesA =0;
 
-    dijkstraLine = L.polyline(dijkstraCoordinates, {
+    for (let i = 0; i < dijkstraData.length; i++){
+        const routeCoordinates = pathToCoordinates(dijkstraData[i].path);
+
+        totalDistanceD += dijkstraData[i].distance;
+        totalNodesD += dijkstraData[i].nodes_explored; 
+
+        // Draw the calculated route.
+        const currentLine = L.polyline(routeCoordinates, {
         weight: 6,
-        color: "#4b6bff",
-    }).addTo(map);
+        color: "#4b6bff"
+        }).addTo(map);
 
-    astarLine = L.polyline(astarCoordinates, {
+        dijkstraLine.push(currentLine);
+    }
+
+    for (let i = 0; i < astarData.length; i++){
+        const routeCoordinates = pathToCoordinates(astarData[i].path);
+
+        totalDistanceA += astarData[i].distance;
+        totalNodesA += astarData[i].nodes_explored; 
+
+        // Draw the calculated route.
+        const currentLine = L.polyline(routeCoordinates, {
         weight: 3,
         color: "#ff5c5c"
-    }).addTo(map);
+        }).addTo(map);
+
+        astarLine.push(currentLine);
+    }
+
 
     document.getElementById("dijkstra-distance").textContent =
-    `${dijkstraData.distance} m`;
+    `${totalDistanceD} m`;
 
     document.getElementById("dijkstra-nodes").textContent =
-    dijkstraData.nodes_explored;
+    totalNodesD;
 
     document.getElementById("astar-distance").textContent =
-    `${astarData.distance} m`;
+    `${totalDistanceA} m`;
 
     document.getElementById("astar-nodes").textContent =
-    astarData.nodes_explored;
+    totalNodesA;
 
 }
 
-async function requestRoute(start, destination, algorithm) {
+async function requestRoute(stops, algorithm) {
+    let route = [];
+
+    for (let i = 0; i < stops.length - 1; i++) {
+        const result = await _requestRoute(
+            stops[i],
+            stops[i + 1],
+            algorithm
+        );
+
+        route.push(result);
+    }
+
+    return route;
+
+}
+
+async function _requestRoute(start, destination, algorithm) {
     const response = await fetch("/api/routes/calculate", {
         method: "POST",
         headers: {
@@ -240,8 +277,7 @@ function pathToCoordinates(path){
     });
 }
 
-
-async function addStop() {
+function addStop() {
 
     const stopContainer = document.createElement("div");
     stopContainer.classList.add("stop");
@@ -270,5 +306,41 @@ async function addStop() {
     stopContainer.appendChild(removeButton);
 
     document.getElementById("stops-container").appendChild(stopContainer);
+}
+
+function getStops() {
+    const start = document.getElementById("start").value;
+    const destination = document.getElementById("destination").value;
+    const stopElements = document.querySelectorAll("#stops-container select");
+    
+    // For each stop if it exists get its element (location)
+    const stops = Array.from(stopElements).map(
+        select => select.value
+    );
+
+    return [start, ...stops, destination];
+}
+
+function removeLines(){
+    if (routeLine.length > 0) {
+        _removeLines(routeLine);
+        routeLine = [];
+    }
+
+    if (dijkstraLine.length > 0) {
+        _removeLines(dijkstraLine);
+        dijkstraLine = [];
+    }
+
+    if (astarLine.length > 0) {
+        _removeLines(astarLine);
+        astarLine = [];
+    }
+}
+
+function _removeLines(lines) {
+    for (let i = 0; i < lines.length; i++){
+        map.removeLayer(lines[i]);
+    }
 }
 
