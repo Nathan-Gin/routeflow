@@ -131,6 +131,79 @@ section h2 {
     margin-top: 0;
 }
 
+#stops-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+/* Keep "Add Stop" pinned below the stop rows regardless of the order
+   they were inserted into the DOM. */
+#stops-container .stop {
+    order: 0;
+}
+
+#add-stop {
+    order: 1;
+}
+
+.stop {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.stop select {
+    flex: 1;
+    min-width: 0;
+}
+
+.stop button {
+    flex-shrink: 0;
+    margin-top: 0;
+    padding: 10px 12px;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.stop button:hover {
+    background: rgba(255, 92, 92, 0.12);
+    border-color: #ff5c5c;
+    color: #ff5c5c;
+}
+
+.stop button:active {
+    background: rgba(255, 92, 92, 0.2);
+}
+
+#add-stop {
+    margin-top: 0;
+    padding: 10px 12px;
+    background: transparent;
+    border: 1px dashed var(--border);
+    color: var(--explored);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+#add-stop::before {
+    content: "+ ";
+}
+
+#add-stop:hover {
+    background: var(--explored-dim);
+    border-color: var(--explored);
+    color: var(--explored);
+}
+
+#add-stop:active {
+    background: rgba(79, 209, 197, 0.22);
+}
+
 .mode-buttons {
     display: flex;
     gap: 4px;
