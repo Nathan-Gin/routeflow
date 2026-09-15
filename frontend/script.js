@@ -8,15 +8,15 @@ L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
     attribution: "&copy; OpenStreetMap contributors"
 }).addTo(map);
 
-let map_data = null;
+let mapData = null;
 let comparisonMode = false;
 
 async function loadMapData() {
     const response = await fetch("api/map");
-    map_data = await response.json();
+    mapData = await response.json();
 
     // Add a marker to the map for each node.
-    for (const node of map_data.nodes) {
+    for (const node of mapData.nodes) {
         L.marker([node.lat, node.lon])
             .addTo(map)
             .bindPopup(`Location: ${node.id}`);
@@ -35,7 +35,7 @@ async function loadMapData() {
     }
 
     //zooms to map to the boundaires of the markers added
-    const bounds = map_data.nodes.map(
+    const bounds = mapData.nodes.map(
         node => [node.lat, node.lon]
     );
 
@@ -43,13 +43,13 @@ async function loadMapData() {
 
 
     // Draw each graph edge on the map.
-    for (const edge of map_data.edges) {
+    for (const edge of mapData.edges) {
 
-        const fromNode = map_data.nodes.find(
+        const fromNode = mapData.nodes.find(
             node => node.id === edge.from
         );
 
-        const toNode = map_data.nodes.find(
+        const toNode = mapData.nodes.find(
             node => node.id === edge.to
         );
 
@@ -132,37 +132,17 @@ async function calculateRoute() {
     const data = await requestRoute(stops, algorithm);
 
     removeLines();
-    
-    let totalDistance = 0;
-    let totalNodes =0;
-    let fullPath = [];
 
-    for (let i = 0; i < data.length; i++){
-        const routeCoordinates = pathToCoordinates(data[i].path);
+    routeLine = drawRoutes(data, "#ff8a3d", 5);
 
-        totalDistance += data[i].distance;
-        totalNodes += data[i].nodes_explored; 
-
-        if (i === 0) {
-            fullPath.push(...data[i].path);
-        } else {
-            fullPath.push(...data[i].path.slice(1));
-        }
-
-        // Draw the calculated route.
-        const currentLine = L.polyline(routeCoordinates, {
-        weight: 5,
-        color: "#ff8a3d"
-        }).addTo(map);
-
-        routeLine.push(currentLine);
-    }
+    const totals = calculateTotals(data);
+    const fullPath = combinePaths(data);    
 
     document.getElementById("distance").textContent =
-        `${totalDistance} m`;
+    `${totals.distance} m`;
 
     document.getElementById("nodes-explored").textContent =
-        totalNodes;
+    totals.nodes;
 
     //this combines array elements returned by flask with " → "
     document.getElementById("path").textContent =
@@ -177,53 +157,23 @@ async function  compareAlgorithms() {
 
     removeLines();
 
-    let totalDistanceD = 0;
-    let totalNodesD =0;
-    let totalDistanceA = 0;
-    let totalNodesA =0;
+    dijkstraLine = drawRoutes(dijkstraData, "#4b6bff" , 6)
+    astarLine = drawRoutes(astarData, "#ff5c5c", 3);
 
-    for (let i = 0; i < dijkstraData.length; i++){
-        const routeCoordinates = pathToCoordinates(dijkstraData[i].path);
-
-        totalDistanceD += dijkstraData[i].distance;
-        totalNodesD += dijkstraData[i].nodes_explored; 
-
-        // Draw the calculated route.
-        const currentLine = L.polyline(routeCoordinates, {
-        weight: 6,
-        color: "#4b6bff"
-        }).addTo(map);
-
-        dijkstraLine.push(currentLine);
-    }
-
-    for (let i = 0; i < astarData.length; i++){
-        const routeCoordinates = pathToCoordinates(astarData[i].path);
-
-        totalDistanceA += astarData[i].distance;
-        totalNodesA += astarData[i].nodes_explored; 
-
-        // Draw the calculated route.
-        const currentLine = L.polyline(routeCoordinates, {
-        weight: 3,
-        color: "#ff5c5c"
-        }).addTo(map);
-
-        astarLine.push(currentLine);
-    }
-
+    const dijkstraTotals = calculateTotals(dijkstraData);
+    const astarTotals = calculateTotals(astarData);
 
     document.getElementById("dijkstra-distance").textContent =
-    `${totalDistanceD} m`;
+    `${dijkstraTotals.distance} m`;
 
     document.getElementById("dijkstra-nodes").textContent =
-    totalNodesD;
+    dijkstraTotals.nodes;
 
     document.getElementById("astar-distance").textContent =
-    `${totalDistanceA} m`;
+    `${astarTotals.distance} m`;
 
     document.getElementById("astar-nodes").textContent =
-    totalNodesA;
+    astarTotals.nodes;
 
 }
 
@@ -269,7 +219,7 @@ async function _requestRoute(start, destination, algorithm) {
 function pathToCoordinates(path){
     return path.map(
     nodeID => {
-        const node = map_data.nodes.find(
+        const node = mapData.nodes.find(
             node => node.id ===nodeID
         );
 
@@ -285,7 +235,7 @@ function addStop() {
     const select = document.createElement("select")
 
     // Populate new select option with nodes
-    for (const node of map_data.nodes) {
+    for (const node of mapData.nodes) {
 
         // Add location to dropdowns (within the )
         const option = document.createElement("option");
@@ -344,3 +294,48 @@ function _removeLines(lines) {
     }
 }
 
+function calculateTotals(data) {
+    let totalDistance = 0;
+    let totalNodes = 0;
+
+    for (let i = 0; i < data.length; i++) {
+        totalDistance += data[i].distance;
+        totalNodes += data[i].nodes_explored;
+    }
+
+    return {
+        distance: totalDistance,
+        nodes: totalNodes
+    };
+}
+
+function drawRoutes(data, colour, weight) {
+    const lines = [];
+
+    for (let i = 0; i < data.length; i++) {
+        const routeCoordinates = pathToCoordinates(data[i].path);
+
+        const currentLine = L.polyline(routeCoordinates, {
+            weight: weight,
+            color: colour
+        }).addTo(map);
+
+        lines.push(currentLine);
+    }
+
+    return lines;
+}
+
+function combinePaths(data) {
+    let fullPath = [];
+
+    for (let i = 0; i < data.length; i++) {
+        if (i === 0) {
+            fullPath.push(...data[i].path);
+        } else {
+            fullPath.push(...data[i].path.slice(1));
+        }
+    }
+
+    return fullPath;
+}
