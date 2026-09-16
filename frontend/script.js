@@ -127,6 +127,8 @@ async function handleCalculation() {
 
 async function calculateRoute() {
     try{
+        hideError();
+
         const stops = getStops()
         const algorithm = document.getElementById("algorithm").value;
 
@@ -150,12 +152,14 @@ async function calculateRoute() {
             fullPath.join(" → ");
     } catch (error){
         console.error(error)
-        alert("Unable to calculate route. Please try again")
+        showError(error.message);
     }
 }
 
 async function  compareAlgorithms() {
     try{
+        hideError();
+
         const stops = getStops()
 
         const dijkstraData = await requestRoute(stops, "dijkstra");
@@ -182,7 +186,7 @@ async function  compareAlgorithms() {
         astarTotals.nodes;
     } catch (error) {
         console.error(error);
-        alert("Unable to compare routes. Please try again.");
+        showError(error.message);
     }
 }
 
@@ -357,4 +361,15 @@ function combinePaths(data) {
     }
 
     return fullPath;
+}
+
+function showError(message) {
+    const errorMessage = document.getElementById("error-message");
+    errorMessage.textContent = message;
+    errorMessage.style.display = "block";
+}
+
+function hideError() {
+    const errorMessage = document.getElementById("error-message");
+    errorMessage.style.display = "none";
 }
