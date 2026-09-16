@@ -126,55 +126,64 @@ async function handleCalculation() {
 }
 
 async function calculateRoute() {
-    const stops = getStops()
-    const algorithm = document.getElementById("algorithm").value;
+    try{
+        const stops = getStops()
+        const algorithm = document.getElementById("algorithm").value;
 
-    const data = await requestRoute(stops, algorithm);
+        const data = await requestRoute(stops, algorithm);
 
-    removeLines();
+        removeLines();
 
-    routeLine = drawRoutes(data, "#ff8a3d", 5);
+        routeLine = drawRoutes(data, "#ff8a3d", 5);
 
-    const totals = calculateTotals(data);
-    const fullPath = combinePaths(data);    
+        const totals = calculateTotals(data);
+        const fullPath = combinePaths(data);    
 
-    document.getElementById("distance").textContent =
-    `${totals.distance} m`;
+        document.getElementById("distance").textContent =
+        `${totals.distance} m`;
 
-    document.getElementById("nodes-explored").textContent =
-    totals.nodes;
+        document.getElementById("nodes-explored").textContent =
+        totals.nodes;
 
-    //this combines array elements returned by flask with " → "
-    document.getElementById("path").textContent =
-        fullPath.join(" → ");
+        //this combines array elements returned by flask with " → "
+        document.getElementById("path").textContent =
+            fullPath.join(" → ");
+    } catch (error){
+        console.error(error)
+        alert("Unable to calculate route. Please try again")
+    }
 }
 
 async function  compareAlgorithms() {
-    const stops = getStops()
+    try{
+        const stops = getStops()
 
-    const dijkstraData = await requestRoute(stops, "dijkstra");
-    const astarData = await requestRoute(stops, "astar");
+        const dijkstraData = await requestRoute(stops, "dijkstra");
+        const astarData = await requestRoute(stops, "astar");
 
-    removeLines();
+        removeLines();
 
-    dijkstraLine = drawRoutes(dijkstraData, "#4b6bff" , 6)
-    astarLine = drawRoutes(astarData, "#ff5c5c", 3);
+        dijkstraLine = drawRoutes(dijkstraData, "#4b6bff" , 6)
+        astarLine = drawRoutes(astarData, "#ff5c5c", 3);
 
-    const dijkstraTotals = calculateTotals(dijkstraData);
-    const astarTotals = calculateTotals(astarData);
+        const dijkstraTotals = calculateTotals(dijkstraData);
+        const astarTotals = calculateTotals(astarData);
 
-    document.getElementById("dijkstra-distance").textContent =
-    `${dijkstraTotals.distance} m`;
+        document.getElementById("dijkstra-distance").textContent =
+        `${dijkstraTotals.distance} m`;
 
-    document.getElementById("dijkstra-nodes").textContent =
-    dijkstraTotals.nodes;
+        document.getElementById("dijkstra-nodes").textContent =
+        dijkstraTotals.nodes;
 
-    document.getElementById("astar-distance").textContent =
-    `${astarTotals.distance} m`;
+        document.getElementById("astar-distance").textContent =
+        `${astarTotals.distance} m`;
 
-    document.getElementById("astar-nodes").textContent =
-    astarTotals.nodes;
-
+        document.getElementById("astar-nodes").textContent =
+        astarTotals.nodes;
+    } catch (error) {
+        console.error(error);
+        alert("Unable to compare routes. Please try again.");
+    }
 }
 
 async function requestRoute(stops, algorithm) {
@@ -207,6 +216,10 @@ async function _requestRoute(start, destination, algorithm) {
             algorithm: algorithm
         })
     });
+
+    if (!response.ok) {
+        throw new Error(`Route request failed: ${response.status}`);
+    }
 
     const data = await response.json();
 
