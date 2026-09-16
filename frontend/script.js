@@ -218,8 +218,14 @@ async function _requestRoute(start, destination, algorithm) {
     });
 
     if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+
+        if (errorData && errorData.error) {
+            throw new Error(errorData.error);
+        }
+
         throw new Error(`Route request failed: ${response.status}`);
-    }
+}
 
     const data = await response.json();
 

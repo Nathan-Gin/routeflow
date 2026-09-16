@@ -22,10 +22,20 @@ def health():
 @routes.post("/api/routes/calculate")
 def calculate_route():
     """ A JSON file is sent with the start,
-    destination and the selectedalgorithm 
+    destination and the selected algorithm 
     used to calculate the path
     """
+    
     data = request.get_json()
+
+    if not data:
+        return {"error": "Request body must contain JSON"}, 400
+
+    required_fields = ["start", "destination", "algorithm"]
+
+    for field in required_fields:
+        if field not in data:
+            return {"error": f"Missing required field: {field}"}, 400
 
     start_id = data["start"]
     destination_id = data["destination"]
@@ -33,6 +43,12 @@ def calculate_route():
 
     start = graph.get_vertex_by_label(start_id)
     destination = graph.get_vertex_by_label(destination_id)
+
+    if start is None:
+        return {"error": "Invalid start location"}, 400
+
+    if destination is None:
+        return {"error": "Invalid destination location"}, 400
 
     if algorithm == "dijkstra":
         result = dijkstra_dest_apq(graph, start, destination)
@@ -42,6 +58,9 @@ def calculate_route():
         return {"error": "Invalid algorithm"}, 400 # bad request
 
     path, distance = graph.extract_path(result, destination_id)
+
+    if not path:
+        return {"error": "No route found between the selected locations"}, 404
     
     return {
         "path": path,
